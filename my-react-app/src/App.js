@@ -7,11 +7,10 @@ function App() {
   const [cabs, setCabs] = useState([]);
   const [selectedCab, setSelectedCab] = useState("");
   const [startTime, setStartTime] = useState("");
-  const [selectedCabPrice, setSelectedCabPrice] = useState(null);
+  const [selectedCabPrice, setSelectedCabPrice] = useState(null); // Initialize selectedCabPrice state
   const [bookingConfirmation, setBookingConfirmation] = useState(null);
   const [bookedCabs, setBookedCabs] = useState([]);
   const [error,seterror]=useState("");
-  const [EstimatedArrivalTime,setEstimatedArrivalTime]=useState(""); 
 
   useEffect(() => {
     axios
@@ -23,17 +22,6 @@ function App() {
         console.error("Error fetching cabs:", error);
       });
   }, []);
-
-  const convertTimeToMinutes = (time) => {
-    const [hours, minutes] = time.split(":");
-    return parseInt(hours) * 60 + parseInt(minutes);
-  };
-
-  const convertMinutesToTime = (minutes) => {
-    const hours = Math.floor(minutes / 60);
-    const mins = minutes % 60;
-    return `${hours}:${mins < 10 ? "0" + mins : mins}`;
-  };
 
   const handleBooking = () => {
     if (source === destination) {
@@ -55,22 +43,8 @@ function App() {
       (cab) => cab.cabId === selectedCab && cab.startTime === startTime
     );
     if (isCabBooked) {
+      setBookingConfirmation("");
       alert("This cab is already booked at the specified start time");
-      return;
-    }
-
-    const selectedCabInfo = cabs.find((cab) => cab._id === selectedCab);
-    const estimatedArrivalTimeInMinutes =
-      convertTimeToMinutes(startTime) + selectedCabInfo.timeToDestination.get(destination);
-    const estimatedArrivalTime = convertMinutesToTime(estimatedArrivalTimeInMinutes);
-
-    const isCabAvailable = bookedCabs.every(
-      (cab) =>
-        cab.cabId !== selectedCab || convertTimeToMinutes(cab.startTime) > estimatedArrivalTimeInMinutes
-    );
-
-    if (!isCabAvailable) {
-      alert("This cab is not available at the specified start time");
       return;
     }
 
@@ -92,22 +66,23 @@ function App() {
   };
 
   const handleCabSelection = (cabId) => {
-    const selectedCabInfo = cabs.find((cab) => cab._id === cabId);
-    setSelectedCab(selectedCabInfo);
-    setSelectedCabPrice(selectedCabInfo.pricePerMinute);
-    setEstimatedArrivalTime(""); // Clear estimated arrival time when cab changes
-};
+    setSelectedCab(cabId);
+    const selectedCabPrice = cabs.find((cab) => cab._id === cabId).pricePerMinute;
+    setSelectedCabPrice(selectedCabPrice);
+  };
+
   return (
-    <div >
-      <h1>Cab Booking System</h1>
-      {error && <p style={{ color: "red" }}>{error}</p>}
-      <form>
+    <div style={{ fontFamily: "Arial, sans-serif", maxWidth: "600px", margin: "0 auto", padding: "20px", backgroundColor: "#f7f7f7", borderRadius: "5px", boxShadow: "0 0 10px rgba(0,0,0,0.1)" }}>
+      <h1 style={{ textAlign: "center", marginBottom: "20px" }}>Cab Booking System</h1>
+      {error && <p style={{ color: "red", textAlign: "center" }}>{error}</p>}
+      <form style={{ marginBottom: "20px" }}>
         <label htmlFor="source">Source:</label>
         <select
           id="source"
           value={source}
           onChange={(e) => setSource(e.target.value)}
           required
+          style={{ marginLeft: "10px" }}
         >
           <option value="">Select</option>
           {["A", "B", "C", "D", "E", "F"].map((letter) => (
@@ -124,6 +99,7 @@ function App() {
           value={destination}
           onChange={(e) => setDestination(e.target.value)}
           required
+          style={{ marginLeft: "10px" }}
         >
           <option value="">Select</option>
           {["A", "B", "C", "D", "E", "F"].map((letter) => (
@@ -139,6 +115,7 @@ function App() {
           id="cab"
           onChange={(e) => handleCabSelection(e.target.value)}
           required
+          style={{ marginLeft: "10px" }}
         >
           <option value="">Select</option>
           {cabs.map((cab) => (
@@ -149,17 +126,18 @@ function App() {
         </select>
         <br />
 
-        <label htmlFor="startTime">Start Time:</label>
+        <label htmlFor="startTime" style={{ marginTop: "10px" }}>Start Time:</label>
         <input
           type="time"
           id="startTime"
           value={startTime}
           onChange={(e) => setStartTime(e.target.value)}
           required
+          style={{ marginLeft: "10px" }}
         />
         <br />
 
-        <button type="button" onClick={handleBooking}>
+        <button type="button" onClick={handleBooking} style={{ marginTop: "10px" }}>
           Book Cab
         </button>
       </form>
