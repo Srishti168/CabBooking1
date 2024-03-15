@@ -10,7 +10,7 @@ app.use(bodyParser.json());
 app.use(cors());
 
 mongoose
-  .connect("mongodb://localhost:27017/cab_system", {
+  .connect("mongodb+srv://Srishti:Srishti123@cluster0.9ix6pzb.mongodb.net/cab_system", {
     useNewUrlParser: true,
     useUnifiedTopology: true,
   })
